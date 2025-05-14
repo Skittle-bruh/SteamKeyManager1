@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient"; // Импортируем для страховки
 import { useToast } from "@/hooks/use-toast";
 
+// Тип контекста приложения
 type AppContextType = {
   apiKey: string | null;
   setApiKey: (key: string) => void;
@@ -16,90 +17,125 @@ type AppContextType = {
   setSelectedAccountId: (id: number | null) => void;
 };
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+// Создаем контекст с дефолтными значениями чтобы TypeScript не ругался на undefined
+const defaultContext: AppContextType = {
+  apiKey: null,
+  setApiKey: () => Promise.resolve(),
+  checkApiKey: () => Promise.resolve(),
+  isLoading: false,
+  activeSection: "dashboard",
+  setActiveSection: () => {},
+  refreshAllAccounts: () => Promise.resolve(),
+  isRefreshingAll: false,
+  selectedAccountId: null,
+  setSelectedAccountId: () => {},
+};
 
+// Создаем контекст
+const AppContext = createContext<AppContextType>(defaultContext);
+
+// Компонент-провайдер контекста
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const queryClientHook = useQueryClient();
+  
+  // Состояния приложения
   const [apiKey, setApiKeyState] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
   const [isRefreshingAll, setIsRefreshingAll] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Get API key status
-  const { 
-    data: apiKeyData, 
-    isLoading: apiKeyLoading,
-    refetch: refetchApiKey
-  } = useQuery({
-    queryKey: ['/api/settings/api-key'],
-    retry: false,
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
-  });
-
-  // Check if API key is set on app startup
-  useEffect(() => {
-    if (apiKeyData?.hasApiKey) {
-      setApiKeyState("********");
-    }
-  }, [apiKeyData]);
-
-  // Set API key
+  // Установка API ключа
   const setApiKey = async (key: string) => {
     try {
-      const response = await apiRequest("POST", "/api/settings/api-key", { apiKey: key });
-      const data = await response.json();
+      setIsLoading(true);
+      const response = await fetch("/api/settings/api-key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: key }),
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API key save failed: ${response.statusText}`);
+      }
       
       setApiKeyState(key);
       toast({
-        title: "Success",
-        description: "API key has been saved successfully",
+        title: "Успех",
+        description: "API ключ успешно сохранен",
       });
       
-      // Invalidate API key cache
-      await queryClient.invalidateQueries({ queryKey: ['/api/settings/api-key'] });
+      // Используем queryClient из хука, если доступен, иначе импортированный
+      const client = queryClientHook || queryClient;
+      client.invalidateQueries({ queryKey: ['/api/settings/api-key'] });
     } catch (error) {
-      console.error("Error saving API key:", error);
+      console.error("Ошибка сохранения API ключа:", error);
       toast({
-        title: "Error",
-        description: "Failed to save API key",
+        title: "Ошибка",
+        description: "Не удалось сохранить API ключ",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Check if API key is valid
+  // Проверка API ключа
   const checkApiKey = async () => {
-    await refetchApiKey();
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/settings/api-key", {
+        credentials: "include"
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.hasApiKey) {
+          setApiKeyState("********");
+        }
+      }
+    } catch (error) {
+      console.error("Ошибка проверки API ключа:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Refresh all accounts
+  // Обновление всех аккаунтов
   const refreshAllAccounts = async () => {
     try {
       setIsRefreshingAll(true);
       toast({
-        title: "Processing",
-        description: "Starting refresh for all accounts...",
+        title: "Обработка",
+        description: "Начинаем обновление всех аккаунтов...",
       });
       
-      const response = await apiRequest("POST", "/api/accounts/refresh-all");
-      const data = await response.json();
-      
-      // Invalidate relevant caches
-      await queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/summary'] });
-      
-      toast({
-        title: "Success",
-        description: `All accounts refreshed successfully`,
+      const response = await fetch("/api/accounts/refresh-all", {
+        method: "POST",
+        credentials: "include"
       });
+      
+      if (response.ok) {
+        // Используем queryClient из хука, если доступен, иначе импортированный
+        const client = queryClientHook || queryClient;
+        client.invalidateQueries({ queryKey: ['/api/accounts'] });
+        client.invalidateQueries({ queryKey: ['/api/cases'] });
+        client.invalidateQueries({ queryKey: ['/api/summary'] });
+        
+        toast({
+          title: "Успех",
+          description: "Все аккаунты успешно обновлены",
+        });
+      } else {
+        throw new Error("Ошибка обновления");
+      }
     } catch (error) {
-      console.error("Error refreshing accounts:", error);
+      console.error("Ошибка обновления аккаунтов:", error);
       toast({
-        title: "Error",
-        description: "Failed to refresh accounts",
+        title: "Ошибка",
+        description: "Не удалось обновить аккаунты",
         variant: "destructive",
       });
     } finally {
@@ -107,30 +143,33 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Проверяем API ключ при загрузке
+  useEffect(() => {
+    checkApiKey();
+  }, []);
+
+  // Собираем значение контекста
+  const contextValue: AppContextType = {
+    apiKey,
+    setApiKey,
+    checkApiKey,
+    isLoading,
+    activeSection,
+    setActiveSection,
+    refreshAllAccounts,
+    isRefreshingAll,
+    selectedAccountId,
+    setSelectedAccountId,
+  };
+
   return (
-    <AppContext.Provider
-      value={{
-        apiKey,
-        setApiKey,
-        checkApiKey,
-        isLoading: apiKeyLoading,
-        activeSection,
-        setActiveSection,
-        refreshAllAccounts,
-        isRefreshingAll,
-        selectedAccountId,
-        setSelectedAccountId,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );
 };
 
+// Хук для использования контекста в компонентах
 export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error("useAppContext must be used within an AppProvider");
-  }
-  return context;
+  return useContext(AppContext);
 };

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCases, Case } from "@/hooks/use-cases";
 import { formatDate, formatCurrency, getPlaceholderAvatar } from "@/lib/utils";
-import { Loader2, RefreshCw, Download, Search, X, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, RefreshCw, Download, Search, X, ArrowUpDown, ArrowUp, ArrowDown, Briefcase } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface AccountDetailsProps {
