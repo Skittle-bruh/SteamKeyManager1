@@ -126,36 +126,36 @@ export function AddAccountModal({ open, onClose }: AddAccountModalProps) {
               placeholder={
                 accountType === "steamid"
                   ? "STEAM_0:1:12345678"
-                  : "https://steamcommunity.com/id/yourname"
+                  : "https://steamcommunity.com/id/вашеимя"
               }
             />
             <p className="text-xs text-muted-foreground">
               {accountType === "steamid"
-                ? "Example: STEAM_0:1:12345678"
-                : "Example: https://steamcommunity.com/id/yourname or just 'yourname'"}
+                ? "Пример: STEAM_0:1:12345678"
+                : "Пример: https://steamcommunity.com/id/вашеимя или просто 'вашеимя'"}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="nickname">Nickname (Optional)</Label>
+            <Label htmlFor="nickname">Никнейм (Опционально)</Label>
             <Input
               id="nickname"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder="Enter a nickname for this account"
+              placeholder="Введите никнейм для этого аккаунта"
             />
           </div>
         </div>
 
         <DialogFooter className="sm:justify-end">
           <Button variant="outline" onClick={handleClose}>
-            Cancel
+            Отмена
           </Button>
           <Button onClick={handleSubmit} disabled={isResolving || addAccount.isPending}>
             {(isResolving || addAccount.isPending) && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Add Account
+            Добавить аккаунт
           </Button>
         </DialogFooter>
       </DialogContent>

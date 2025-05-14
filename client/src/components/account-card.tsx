@@ -96,24 +96,24 @@ export function AccountCard({
 
           <div className="grid grid-cols-2 gap-2 mb-4">
             <div className="bg-neutral-100 p-2 rounded">
-              <p className="text-xs text-neutral-500">Cases Count</p>
+              <p className="text-xs text-neutral-500">Количество кейсов</p>
               <p className="font-semibold text-neutral-800">{account.casesCount}</p>
             </div>
             <div className="bg-neutral-100 p-2 rounded">
-              <p className="text-xs text-neutral-500">Total Value</p>
+              <p className="text-xs text-neutral-500">Общая стоимость</p>
               <p className="font-semibold text-green-600">{account.formattedValue}</p>
             </div>
           </div>
 
           <div className="flex justify-between text-xs text-neutral-500">
-            <span>Updated: {formatDate(account.lastUpdated)}</span>
+            <span>Обновлено: {formatDate(account.lastUpdated)}</span>
             <Button
               variant="link"
               size="sm"
               className="text-primary hover:underline p-0 h-auto"
               onClick={handleViewDetails}
             >
-              View Details
+              Подробнее
             </Button>
           </div>
         </CardContent>
@@ -122,10 +122,10 @@ export function AccountCard({
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove the account "{account.nickname || account.steamId}" and all its
-              associated case data. This action cannot be undone.
+              Это удалит аккаунт "{account.nickname || account.steamId}" и все его
+              связанные данные о кейсах. Это действие нельзя отменить.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
