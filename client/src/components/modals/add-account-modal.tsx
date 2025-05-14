@@ -34,8 +34,8 @@ export function AddAccountModal({ open, onClose }: AddAccountModalProps) {
     try {
       if (!identifier.trim()) {
         toast({
-          title: "Error",
-          description: "Please enter a Steam ID or custom URL",
+          title: "Ошибка",
+          description: "Пожалуйста, введите Steam ID или пользовательский URL",
           variant: "destructive",
         });
         return;
@@ -70,8 +70,8 @@ export function AddAccountModal({ open, onClose }: AddAccountModalProps) {
     } catch (error) {
       console.error("Error adding account:", error);
       toast({
-        title: "Error",
-        description: (error as Error).message || "Failed to add account",
+        title: "Ошибка",
+        description: (error as Error).message || "Не удалось добавить аккаунт",
         variant: "destructive",
       });
     } finally {
@@ -92,15 +92,15 @@ export function AddAccountModal({ open, onClose }: AddAccountModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Steam Account</DialogTitle>
+          <DialogTitle>Добавить аккаунт Steam</DialogTitle>
           <DialogDescription>
-            Enter your Steam ID or custom URL to add an account to track
+            Введите ваш Steam ID или пользовательский URL для добавления аккаунта для отслеживания
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label>Account Identifier Type</Label>
+            <Label>Тип идентификатора аккаунта</Label>
             <RadioGroup
               value={accountType}
               onValueChange={(val) => setAccountType(val as "steamid" | "customurl")}
@@ -112,13 +112,13 @@ export function AddAccountModal({ open, onClose }: AddAccountModalProps) {
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="customurl" id="customurl" />
-                <Label htmlFor="customurl">Custom URL</Label>
+                <Label htmlFor="customurl">Пользовательский URL</Label>
               </div>
             </RadioGroup>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="identifier">Steam ID / Custom URL</Label>
+            <Label htmlFor="identifier">Steam ID / Пользовательский URL</Label>
             <Input
               id="identifier"
               value={identifier}

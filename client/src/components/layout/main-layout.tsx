@@ -41,7 +41,7 @@ export function MainLayout({ children, title, description, showAddAccount = fals
               onClick={() => setApiKeyModalOpen(true)}
             >
               <Key className="h-5 w-5" />
-              API Key
+              API Ключ
             </Button>
             
             {activeSection === "dashboard" && (
@@ -55,7 +55,7 @@ export function MainLayout({ children, title, description, showAddAccount = fals
                 ) : (
                   <RefreshCw className="h-5 w-5" />
                 )}
-                Refresh All
+                Обновить все
               </Button>
             )}
 
@@ -78,7 +78,7 @@ export function MainLayout({ children, title, description, showAddAccount = fals
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-                Add Account
+                Добавить аккаунт
               </Button>
             )}
           </div>
