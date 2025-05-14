@@ -189,15 +189,15 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
           {/* Inventory Summary */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-neutral-100 p-3 rounded-lg">
-              <p className="text-sm text-neutral-500">Total Cases</p>
+              <p className="text-sm text-neutral-500">Всего кейсов</p>
               <p className="text-xl font-semibold text-neutral-900">{totalCases}</p>
             </div>
             <div className="bg-neutral-100 p-3 rounded-lg">
-              <p className="text-sm text-neutral-500">Total Value</p>
+              <p className="text-sm text-neutral-500">Общая стоимость</p>
               <p className="text-xl font-semibold text-green-600">{formatCurrency(totalValue)}</p>
             </div>
             <div className="bg-neutral-100 p-3 rounded-lg">
-              <p className="text-sm text-neutral-500">Average Price</p>
+              <p className="text-sm text-neutral-500">Средняя цена</p>
               <p className="text-xl font-semibold text-blue-600">{formatCurrency(averagePrice)}</p>
             </div>
           </div>
@@ -207,7 +207,7 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
                 <Input
-                  placeholder="Search cases..."
+                  placeholder="Поиск кейсов..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pr-8 w-[200px]"
@@ -224,17 +224,17 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
                 }}
               >
                 <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Sort by..." />
+                  <SelectValue placeholder="Сортировать по..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name_asc">Sort by: Name (A-Z)</SelectItem>
-                  <SelectItem value="name_desc">Sort by: Name (Z-A)</SelectItem>
-                  <SelectItem value="price_asc">Sort by: Price (Low to High)</SelectItem>
-                  <SelectItem value="price_desc">Sort by: Price (High to Low)</SelectItem>
-                  <SelectItem value="quantity_asc">Sort by: Quantity (Low to High)</SelectItem>
-                  <SelectItem value="quantity_desc">Sort by: Quantity (High to Low)</SelectItem>
-                  <SelectItem value="total_asc">Sort by: Total Value (Low to High)</SelectItem>
-                  <SelectItem value="total_desc">Sort by: Total Value (High to Low)</SelectItem>
+                  <SelectItem value="name_asc">Сортировка: Названию (А-Я)</SelectItem>
+                  <SelectItem value="name_desc">Сортировка: Названию (Я-А)</SelectItem>
+                  <SelectItem value="price_asc">Сортировка: Цене (по возрастанию)</SelectItem>
+                  <SelectItem value="price_desc">Сортировка: Цене (по убыванию)</SelectItem>
+                  <SelectItem value="quantity_asc">Сортировка: Количеству (по возрастанию)</SelectItem>
+                  <SelectItem value="quantity_desc">Сортировка: Количеству (по убыванию)</SelectItem>
+                  <SelectItem value="total_asc">Сортировка: Общей стоимости (по возрастанию)</SelectItem>
+                  <SelectItem value="total_desc">Сортировка: Общей стоимости (по убыванию)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -248,7 +248,7 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
                 className="flex items-center gap-1"
               >
                 <Download className="h-4 w-4" />
-                Export
+                Экспорт
               </Button>
             </div>
           </div>
@@ -259,11 +259,11 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-neutral-100">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Case Name</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Quantity</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Unit Price</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Total Value</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Last Updated</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Название кейса</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Количество</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Цена за единицу</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Общая стоимость</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Обновлено</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-neutral-200">
@@ -305,7 +305,7 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
                         className="flex items-center space-x-1" 
                         onClick={() => toggleSort('name')}
                       >
-                        <span>Case Name</span>
+                        <span>Название кейса</span>
                         {getSortIcon('name')}
                       </button>
                     </th>
@@ -314,7 +314,7 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
                         className="flex items-center space-x-1" 
                         onClick={() => toggleSort('quantity')}
                       >
-                        <span>Quantity</span>
+                        <span>Количество</span>
                         {getSortIcon('quantity')}
                       </button>
                     </th>
