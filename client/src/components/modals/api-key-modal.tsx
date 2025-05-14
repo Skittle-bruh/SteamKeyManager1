@@ -40,8 +40,8 @@ export function ApiKeyModal({ open, onClose }: ApiKeyModalProps) {
     try {
       if (!key.trim()) {
         toast({
-          title: "Error",
-          description: "Please enter a valid Steam API key",
+          title: "Ошибка",
+          description: "Пожалуйста, введите корректный Steam API ключ",
           variant: "destructive",
         });
         return;
@@ -53,8 +53,8 @@ export function ApiKeyModal({ open, onClose }: ApiKeyModalProps) {
     } catch (error) {
       console.error("Error saving API key:", error);
       toast({
-        title: "Error",
-        description: "Failed to save API key",
+        title: "Ошибка",
+        description: "Не удалось сохранить API ключ",
         variant: "destructive",
       });
     } finally {
@@ -82,19 +82,19 @@ export function ApiKeyModal({ open, onClose }: ApiKeyModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Steam API Key</DialogTitle>
+          <DialogTitle>Steam API Ключ</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="apiKey">Steam Web API Key</Label>
+            <Label htmlFor="apiKey">Steam Web API Ключ</Label>
             <div className="relative">
               <Input
                 id="apiKey"
                 type={showKey ? "text" : "password"}
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
-                placeholder="Enter your Steam API key"
+                placeholder="Введите ваш Steam API ключ"
                 className="pr-10"
               />
               <button
@@ -110,14 +110,14 @@ export function ApiKeyModal({ open, onClose }: ApiKeyModalProps) {
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Get your API key from{" "}
+              Получите API ключ на{" "}
               <a
                 href="https://steamcommunity.com/dev/apikey"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                Steam Developer Portal
+                Портале разработчика Steam
               </a>
             </p>
           </div>
@@ -125,19 +125,19 @@ export function ApiKeyModal({ open, onClose }: ApiKeyModalProps) {
           <Alert className="bg-blue-50 text-blue-700 border-blue-200">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Your API key is stored locally and is only used to access the Steam Web API.
-              It is never sent to any third-party servers.
+              Ваш API ключ хранится локально и используется только для доступа к Steam Web API.
+              Он никогда не передается на сторонние серверы.
             </AlertDescription>
           </Alert>
         </div>
 
         <DialogFooter className="sm:justify-end">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            Отмена
           </Button>
           <Button onClick={handleSave} disabled={isSaving}>
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save API Key
+            Сохранить API ключ
           </Button>
         </DialogFooter>
       </DialogContent>

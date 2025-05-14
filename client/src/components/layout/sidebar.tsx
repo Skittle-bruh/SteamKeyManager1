@@ -18,10 +18,10 @@ export function Sidebar({ className }: SidebarProps) {
   const { activeSection, setActiveSection } = useAppContext();
 
   const navItems = [
-    { id: "dashboard", icon: Home, label: "Dashboard" },
-    { id: "accounts", icon: Users, label: "Accounts" },
-    { id: "settings", icon: Settings, label: "Settings" },
-    { id: "logs", icon: ClipboardList, label: "Logs" },
+    { id: "dashboard", icon: Home, label: "Дашборд" },
+    { id: "accounts", icon: Users, label: "Аккаунты" },
+    { id: "settings", icon: Settings, label: "Настройки" },
+    { id: "logs", icon: ClipboardList, label: "Логи" },
   ];
 
   return (
@@ -29,7 +29,7 @@ export function Sidebar({ className }: SidebarProps) {
       <div className="p-4 border-b border-neutral-200">
         <h1 className="text-xl font-semibold text-neutral-900 flex items-center gap-2">
           <Cloud className="h-6 w-6 text-primary" />
-          Steam Parser
+          Парсер Стим
         </h1>
       </div>
 
@@ -62,7 +62,7 @@ export function Sidebar({ className }: SidebarProps) {
       <div className="p-4 border-t border-neutral-200">
         <div className="flex items-center text-sm text-neutral-600">
           <span className="flex h-2 w-2 mr-2 rounded-full bg-green-500"></span>
-          Database: Connected
+          База данных: Подключена
         </div>
       </div>
     </div>
