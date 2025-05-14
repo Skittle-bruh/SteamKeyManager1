@@ -170,7 +170,7 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
               <Button variant="ghost" onClick={onClose} size="icon">
                 <X className="h-5 w-5" />
               </Button>
-              <span className="text-sm text-neutral-500">Updated: {formatDate(account.lastUpdated)}</span>
+              <span className="text-sm text-neutral-500">Обновлено: {formatDate(account.lastUpdated)}</span>
               <Button
                 onClick={() => onRefresh(accountId)}
                 disabled={isRefreshing}
@@ -181,7 +181,7 @@ export function AccountDetails({ accountId, onRefresh, isRefreshing, onClose }: 
                 ) : (
                   <RefreshCw className="h-5 w-5" />
                 )}
-                Refresh
+                Обновить
               </Button>
             </div>
           </div>
