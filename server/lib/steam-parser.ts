@@ -159,8 +159,9 @@ export class SteamParser {
     const y = BigInt(parts[2]);
     const z = BigInt(parts[3]);
     
-    const accountID = z * BigInt(2) + y;
-    const steamID64 = (universe << BigInt(56)) | BigInt('0x0110000100000000') | accountID;
+    // Correct formula for SteamID64 conversion
+    // SteamID64 = 76561197960265728 + (Z * 2) + Y
+    const steamID64 = BigInt('76561197960265728') + (z * BigInt(2)) + y;
     
     return steamID64.toString();
   }
@@ -179,9 +180,12 @@ export class SteamParser {
     try {
       // Convert STEAM_X:Y:Z to 64-bit SteamID for inventory requests
       const steamID64 = this.convertSteamIDToSteamID64(steamId);
+      console.log(`Converting SteamID ${steamId} to SteamID64: ${steamID64}`);
       
       // First, try using Steam web API via HTTP GET
-      const url = `${STEAM_BASE_URL}/inventory/${steamID64}/${appId}/2?l=english&count=5000`;
+      // Remove count parameter as it can cause 400 errors with large values
+      const url = `${STEAM_BASE_URL}/inventory/${steamID64}/${appId}/2?l=english`;
+      console.log(`Making inventory request to: ${url}`);
       const response = await this.requestManager.makeRequest(url);
       
       if (!response.ok) {
