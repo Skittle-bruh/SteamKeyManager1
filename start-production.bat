@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 echo =====================================
 echo Steam Inventory Parser - Продакшн
 echo =====================================
@@ -22,10 +23,16 @@ if not exist "data" mkdir data
 
 echo.
 echo Сборка приложения...
-call npm run build
-
+npx vite build
 if %errorlevel% neq 0 (
-    echo ОШИБКА: Не удалось собрать приложение!
+    echo ОШИБКА: Не удалось собрать фронтенд!
+    pause
+    exit /b 1
+)
+
+npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+if %errorlevel% neq 0 (
+    echo ОШИБКА: Не удалось собрать сервер!
     pause
     exit /b 1
 )
@@ -39,4 +46,10 @@ echo Для остановки нажмите Ctrl+C
 echo.
 
 set NODE_ENV=production
-call node dist/server/index.js
+node dist/index.js
+if %errorlevel% neq 0 (
+    echo.
+    echo ОШИБКА: Не удалось запустить продакшн сервер!
+    pause
+    exit /b 1
+)
