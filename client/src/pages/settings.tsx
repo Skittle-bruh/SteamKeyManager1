@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAppContext } from "@/context/app-context";
-import { Eye, EyeOff, Save, ShieldAlert } from "lucide-react";
+import { Eye, EyeOff, Save, ShieldAlert, Moon, Sun } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Separator } from "@/components/ui/separator";
@@ -26,6 +26,7 @@ export default function Settings() {
   const [currency, setCurrency] = useState("USD");
   const [requestDelay, setRequestDelay] = useState(2000);
   const [userAgents, setUserAgents] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Fetch current settings
   const { data: settings, isLoading } = useQuery({
@@ -49,6 +50,35 @@ export default function Settings() {
       setPendingApiKey(apiKeyData.preview);
     }
   }, [apiKeyData]);
+
+  // Load theme preference from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = savedTheme === 'dark' || 
+      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    setIsDarkMode(prefersDark);
+    applyTheme(prefersDark);
+  }, []);
+
+  const applyTheme = (isDark: boolean) => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  const handleThemeChange = (checked: boolean) => {
+    setIsDarkMode(checked);
+    localStorage.setItem('theme', checked ? 'dark' : 'light');
+    applyTheme(checked);
+    
+    toast({
+      title: "Тема изменена",
+      description: `Переключено на ${checked ? 'темную' : 'светлую'} тему`,
+    });
+  };
   
   // Save settings mutation
   const saveSettings = useMutation({
@@ -119,14 +149,41 @@ export default function Settings() {
   };
 
   return (
-    <MainLayout title="Settings" description="Configure application settings">
+    <MainLayout title="Настройки" description="Управление настройками приложения">
       <div className="grid grid-cols-1 gap-6">
-        {/* API Key Settings */}
-        <Card>
+        {/* Theme Settings */}
+        <Card className="win11-card">
           <CardHeader>
-            <CardTitle>API Key</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              {isDarkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              Внешний вид
+            </CardTitle>
             <CardDescription>
-              Configure your Steam API key for accessing the Steam Web API
+              Настройки темы оформления
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-base">Темная тема</Label>
+                <p className="text-sm text-muted-foreground">
+                  Переключение между светлой и темной темой
+                </p>
+              </div>
+              <Switch
+                checked={isDarkMode}
+                onCheckedChange={handleThemeChange}
+                aria-label="Toggle dark mode"
+              />
+            </div>
+          </CardContent>
+        </Card>
+        {/* API Key Settings */}
+        <Card className="win11-card">
+          <CardHeader>
+            <CardTitle>Steam API Ключ</CardTitle>
+            <CardDescription>
+              Настройка ключа Steam API для доступа к данным Steam
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -162,7 +219,7 @@ export default function Settings() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Get your API key from{" "}
+                Получите ваш API ключ на{" "}
                 <a
                   href="https://steamcommunity.com/dev/apikey"
                   target="_blank"
@@ -176,24 +233,24 @@ export default function Settings() {
             
             <div className="mt-4">
               <Button onClick={handleSaveApiKey} disabled={saveSettings.isPending}>
-                Save API Key
+                Сохранить API ключ
               </Button>
             </div>
           </CardContent>
         </Card>
         
         {/* General Settings */}
-        <Card>
+        <Card className="win11-card">
           <CardHeader>
-            <CardTitle>General Settings</CardTitle>
+            <CardTitle>Общие настройки</CardTitle>
             <CardDescription>
-              Configure application behavior and preferences
+              Настройки поведения приложения
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
+                <Label htmlFor="currency">Валюта</Label>
                 <Select 
                   value={currency} 
                   onValueChange={setCurrency}
@@ -212,14 +269,14 @@ export default function Settings() {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Currency used for displaying prices and values
+                  Валюта для отображения цен и стоимости
                 </p>
               </div>
               
               <Separator />
               
               <div className="space-y-2">
-                <Label>Request Delay</Label>
+                <Label>Задержка запросов</Label>
                 <div className="flex items-center space-x-2">
                   <Slider
                     value={[requestDelay]}
@@ -232,7 +289,7 @@ export default function Settings() {
                   <span className="w-16 text-right text-sm">{requestDelay}ms</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Delay between requests to Steam servers (1000-5000ms)
+                  Задержка между запросами к серверам Steam (1000-5000мс)
                 </p>
               </div>
               

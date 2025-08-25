@@ -496,7 +496,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let lastUpdated = null;
       if (accounts.length > 0) {
         lastUpdated = accounts.reduce((latest, account) => {
-          return account.lastUpdated > latest ? account.lastUpdated : latest;
+          return (account.lastUpdated && account.lastUpdated > latest) ? account.lastUpdated : latest;
         }, new Date(0));
       }
       

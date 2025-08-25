@@ -5,7 +5,7 @@ import { useAccounts, AccountSummary } from "@/hooks/use-accounts";
 import { useCasesSummary } from "@/hooks/use-cases";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { AccountCard } from "@/components/account-card";
-import { AccountDetails } from "@/components/account-details";
+import { CasesModal } from "@/components/cases-modal";
 import { useAppContext } from "@/context/app-context";
 import { Users, Briefcase, DollarSign, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,8 +34,11 @@ export default function Dashboard() {
     }
   };
 
+  const [showCasesModal, setShowCasesModal] = useState(false);
+
   const handleViewDetails = (id: number) => {
     setSelectedAccountId(id);
+    setShowCasesModal(true);
   };
 
   const isLoading = accountsLoading || summaryLoading;
@@ -192,13 +195,17 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Account Details Section (Shown when account is selected) */}
+      {/* Cases Modal */}
       {selectedAccountId && (
-        <AccountDetails 
+        <CasesModal
           accountId={selectedAccountId}
+          isOpen={showCasesModal}
+          onClose={() => {
+            setShowCasesModal(false);
+            setSelectedAccountId(null);
+          }}
           onRefresh={handleRefreshAccount}
           isRefreshing={refreshingAccountId === selectedAccountId}
-          onClose={() => setSelectedAccountId(null)}
         />
       )}
     </MainLayout>
