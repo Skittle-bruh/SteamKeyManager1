@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [showCasesModal, setShowCasesModal] = useState(false);
 
   const handleViewDetails = (id: number) => {
+    alert('Кликнули Подробнее для аккаунта: ' + id);
     console.log('Opening cases modal for account:', id);
     setSelectedAccountId(id);
     setShowCasesModal(true);

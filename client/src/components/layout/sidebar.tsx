@@ -40,6 +40,7 @@ export function Sidebar({ className }: SidebarProps) {
                 data-testid={`button-${item.id}`}
                 onClick={(e) => {
                   e.preventDefault();
+                  alert('Кликнули на: ' + item.id);
                   console.log('Navigating to section:', item.id);
                   setActiveSection(item.id);
                 }}

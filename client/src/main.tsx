@@ -11,16 +11,14 @@ import App from "./App";
 
 // Создаем корневой компонент
 const Root = () => (
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <TooltipProvider>
-          <App />
-          <Toaster />
-        </TooltipProvider>
-      </AppProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <AppProvider>
+      <TooltipProvider>
+        <App />
+        <Toaster />
+      </TooltipProvider>
+    </AppProvider>
+  </QueryClientProvider>
 );
 
 // Рендерим приложение
