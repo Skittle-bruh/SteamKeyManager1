@@ -2,7 +2,8 @@ import React from "react";
 import { Sidebar } from "./sidebar";
 import { useAppContext } from "@/context/app-context";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Key } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, RefreshCw, Key, AlertTriangle, Clock } from "lucide-react";
 import { ApiKeyModal } from "@/components/modals/api-key-modal";
 import { useState } from "react";
 import { AddAccountModal } from "@/components/modals/add-account-modal";
@@ -28,6 +29,16 @@ export function MainLayout({ children, title, description, showAddAccount = fals
       <Sidebar />
       
       <div className="flex-1 flex flex-col overflow-hidden bg-neutral-100">
+        {/* Steam API 2025 Rate Limit Warning */}
+        <Alert className="m-4 mb-2 border-orange-200 bg-orange-50">
+          <AlertTriangle className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-800">
+            <strong>Steam API 2025:</strong> Ограничения инвентаря - 5 запросов за 30 минут. 
+            Обновления могут занять больше времени. 
+            <Clock className="inline h-3 w-3 ml-1" /> Последнее обновление кешируется на 2 часа.
+          </AlertDescription>
+        </Alert>
+        
         <header className="bg-white border-b border-neutral-200 py-4 px-6 flex justify-between items-center">
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>

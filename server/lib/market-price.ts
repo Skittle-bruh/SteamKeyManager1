@@ -8,7 +8,7 @@ const STEAM_MARKET_URL = 'https://steamcommunity.com/market/priceoverview/';
 export class MarketPrice {
   private requestManager: RequestManager;
   private priceCache: Map<string, { price: number, timestamp: number }>;
-  private CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+  private CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds (Steam 2025 - longer cache)
   
   constructor() {
     this.requestManager = new RequestManager();
@@ -35,7 +35,7 @@ export class MarketPrice {
         throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
+      const data = await response.json() as any;
       
       if (!data.success) {
         throw new Error('Failed to get price data');

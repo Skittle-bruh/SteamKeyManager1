@@ -23,6 +23,10 @@ function isCase(item: any): boolean {
 
 export class SteamParser {
   private requestManager: RequestManager;
+  private inventoryCache: Map<string, { data: InsertCase[], timestamp: number }> = new Map();
+  private profileCache: Map<string, { data: any, timestamp: number }> = new Map();
+  private readonly INVENTORY_CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours (Steam 2025)
+  private readonly PROFILE_CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours
   
   constructor() {
     this.requestManager = new RequestManager();
@@ -55,7 +59,7 @@ export class SteamParser {
       
       const url = `${STEAM_API_BASE_URL}/ISteamUser/ResolveVanityURL/v1/?key=${apiKey}&vanityurl=${vanityUrl}`;
       const response = await this.requestManager.makeRequest(url);
-      const data = await response.json();
+      const data = await response.json() as any;
       
       if (data.response && data.response.success === 1) {
         return this.convertSteamID64ToSteamID(data.response.steamid);
@@ -76,8 +80,8 @@ export class SteamParser {
   // Convert 64-bit SteamID to STEAM_X:Y:Z format
   private convertSteamID64ToSteamID(steamID64: string): string {
     const steamID64Num = BigInt(steamID64);
-    const universe = Number((steamID64Num >> 56n) & 0xFFn);
-    const accountIdLow = Number(steamID64Num & 0xFFFFFFFFn);
+    const universe = Number((steamID64Num >> BigInt(56)) & BigInt(0xFF));
+    const accountIdLow = Number(steamID64Num & BigInt(0xFFFFFFFF));
     
     const y = accountIdLow & 1;
     const z = accountIdLow >> 1;
@@ -92,6 +96,13 @@ export class SteamParser {
     avatarUrl: string, 
     isPrivate: boolean 
   } | null> {
+    // Check cache first
+    const cached = this.profileCache.get(steamId);
+    if (cached && (Date.now() - cached.timestamp) < this.PROFILE_CACHE_DURATION) {
+      console.log('Using cached profile data for', steamId);
+      return cached.data;
+    }
+    
     try {
       const settings = await storage.getSettings();
       const apiKey = settings?.steamApiKey;
@@ -105,16 +116,24 @@ export class SteamParser {
       
       const url = `${STEAM_API_BASE_URL}/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamID64}`;
       const response = await this.requestManager.makeRequest(url);
-      const data = await response.json();
+      const data = await response.json() as any;
       
       if (data.response && data.response.players && data.response.players.length > 0) {
         const player = data.response.players[0];
-        return {
+        const profileData = {
           nickname: player.personaname,
           profileUrl: player.profileurl,
           avatarUrl: player.avatarmedium,
           isPrivate: player.communityvisibilitystate !== 3
         };
+        
+        // Cache the result
+        this.profileCache.set(steamId, {
+          data: profileData,
+          timestamp: Date.now()
+        });
+        
+        return profileData;
       } else {
         throw new Error('Player not found or API returned no data');
       }
@@ -140,14 +159,23 @@ export class SteamParser {
     const y = BigInt(parts[2]);
     const z = BigInt(parts[3]);
     
-    const accountID = z * 2n + y;
-    const steamID64 = (universe << 56n) | 0x0110000100000000n | accountID;
+    const accountID = z * BigInt(2) + y;
+    const steamID64 = (universe << BigInt(56)) | BigInt('0x0110000100000000') | accountID;
     
     return steamID64.toString();
   }
   
   // Get inventory items for a Steam account
   async getInventory(accountId: number, steamId: string, appId = CSGO_APP_ID): Promise<InsertCase[]> {
+    const cacheKey = `${steamId}_${appId}`;
+    
+    // Check cache first (Steam 2025 - aggressive caching due to rate limits)
+    const cached = this.inventoryCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < this.INVENTORY_CACHE_DURATION) {
+      console.log('Using cached inventory data for', steamId);
+      return cached.data.map(item => ({ ...item, accountId })); // Update accountId for current request
+    }
+    
     try {
       // Convert STEAM_X:Y:Z to 64-bit SteamID for inventory requests
       const steamID64 = this.convertSteamIDToSteamID64(steamId);
@@ -163,7 +191,7 @@ export class SteamParser {
         throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
+      const data = await response.json() as any;
       
       if (!data.success || !data.assets || !data.descriptions) {
         throw new Error('Failed to parse inventory data');
@@ -199,6 +227,12 @@ export class SteamParser {
           });
         }
       }
+      
+      // Cache successful result
+      this.inventoryCache.set(cacheKey, {
+        data: cases,
+        timestamp: Date.now()
+      });
       
       return cases;
     } catch (error) {
