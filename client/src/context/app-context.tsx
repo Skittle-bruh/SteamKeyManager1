@@ -41,10 +41,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   
   // Состояния приложения
   const [apiKey, setApiKeyState] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSectionState] = useState("dashboard");
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
   const [isRefreshingAll, setIsRefreshingAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Обертка для setActiveSection с отладкой
+  const setActiveSection = (section: string) => {
+    console.log('setActiveSection called with:', section);
+    console.log('Current activeSection before:', activeSection);
+    setActiveSectionState(prev => {
+      console.log('setActiveSectionState: prev was:', prev, 'new is:', section);
+      return section;
+    });
+    console.log('setActiveSectionState called');
+  };
 
   // Установка API ключа
   const setApiKey = async (key: string) => {
@@ -148,6 +159,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     checkApiKey();
   }, []);
 
+  // Отладочный эффект для отслеживания изменений activeSection
+  useEffect(() => {
+    console.log('activeSection changed to:', activeSection);
+  }, [activeSection]);
+
   // Собираем значение контекста
   const contextValue: AppContextType = {
     apiKey,
@@ -161,6 +177,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     selectedAccountId,
     setSelectedAccountId,
   };
+
+  console.log('Context value created with activeSection:', activeSection);
 
   return (
     <AppContext.Provider value={contextValue}>
