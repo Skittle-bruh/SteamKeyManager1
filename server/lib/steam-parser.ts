@@ -71,7 +71,7 @@ export class SteamParser {
       await storage.createLog({ 
         level: 'error', 
         message: 'Failed to resolve Steam ID',
-        details: { identifier, error: (error as Error).message }
+        details: JSON.stringify({ identifier, error: (error as Error).message })
       });
       return null;
     }
@@ -142,7 +142,7 @@ export class SteamParser {
       await storage.createLog({ 
         level: 'error', 
         message: 'Failed to get profile info',
-        details: { steamId, error: (error as Error).message }
+        details: JSON.stringify({ steamId, error: (error as Error).message })
       });
       return null;
     }
@@ -244,7 +244,7 @@ export class SteamParser {
       await storage.createLog({ 
         level: 'error', 
         message: 'Failed to parse inventory',
-        details: { accountId, steamId, appId, error: (error as Error).message }
+        details: JSON.stringify({ accountId, steamId, appId, error: (error as Error).message })
       });
       
       // Update account to mark it as private if that's the error

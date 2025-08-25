@@ -143,7 +143,7 @@ export class DatabaseStorage implements IStorage {
     return {
       ...settingsRecord,
       userAgents: JSON.parse(settingsRecord.userAgents || '[]')
-    } as Settings;
+    } as Settings & { userAgents: string[] };
   }
 
   async saveSettings(newSettings: InsertSettings): Promise<Settings> {
@@ -166,13 +166,13 @@ export class DatabaseStorage implements IStorage {
       return {
         ...updated,
         userAgents: JSON.parse(updated.userAgents || '[]')
-      } as Settings;
+      } as Settings & { userAgents: string[] };
     } else {
       const [created] = await db.insert(settings).values(settingsToSave).returning();
       return {
         ...created,
         userAgents: JSON.parse(created.userAgents || '[]')
-      } as Settings;
+      } as Settings & { userAgents: string[] };
     }
   }
 
@@ -181,12 +181,26 @@ export class DatabaseStorage implements IStorage {
     
     if (!existingSettings) return undefined;
     
+    // Convert userAgents to JSON string if it's an array
+    const updateData = {
+      ...settingsUpdate,
+      ...(settingsUpdate.userAgents && typeof settingsUpdate.userAgents !== 'string' 
+        ? { userAgents: JSON.stringify(settingsUpdate.userAgents) }
+        : {})
+    };
+    
     const [updated] = await db
       .update(settings)
-      .set(settingsUpdate)
+      .set(updateData)
       .where(eq(settings.id, existingSettings.id))
       .returning();
-    return updated || undefined;
+    
+    if (!updated) return undefined;
+    
+    return {
+      ...updated,
+      userAgents: JSON.parse(updated.userAgents || '[]')
+    } as Settings & { userAgents: string[] };
   }
 
   // Log operations

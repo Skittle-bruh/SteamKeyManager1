@@ -25,8 +25,10 @@ export const cases = sqliteTable("cases", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   accountId: integer("accountId").notNull().references(() => accounts.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  appId: integer("appId").notNull(),
+  appId: text("appId").notNull(),
   assetId: text("assetId").notNull(),
+  classId: text("classId"),
+  instanceId: text("instanceId"),
   marketHashName: text("marketHashName").notNull(),
   iconUrl: text("iconUrl"),
   imageUrl: text("imageUrl"),
@@ -46,6 +48,7 @@ export type Case = typeof cases.$inferSelect;
 // Settings table
 export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  steamApiKey: text("steamApiKey"),
   currency: text("currency").default("USD").notNull(),
   requestDelay: integer("requestDelay").default(2000).notNull(),
   userAgents: text("userAgents").notNull(), // JSON string of array

@@ -65,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'info',
         message: 'Account created',
-        details: { accountId: newAccount.id, steamId: newAccount.steamId }
+        details: JSON.stringify({ accountId: newAccount.id, steamId: newAccount.steamId })
       });
       
       res.status(201).json(newAccount);
@@ -94,7 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'info',
         message: 'Account deleted',
-        details: { accountId: id, steamId: account.steamId }
+        details: JSON.stringify({ accountId: id, steamId: account.steamId })
       });
       
       res.status(204).end();
@@ -160,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'info',
         message: 'Starting inventory refresh',
-        details: { accountId: id, steamId: account.steamId }
+        details: JSON.stringify({ accountId: id, steamId: account.steamId })
       });
       
       // Get inventory items
@@ -192,19 +192,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Update account lastUpdated
-      await storage.updateAccount(id, { lastUpdated: new Date() });
+      await storage.updateAccount(id, { lastUpdated: new Date().toISOString() });
       
       // Log refresh completion
       await storage.createLog({
         level: 'info',
         message: 'Inventory refresh completed',
-        details: { 
+        details: JSON.stringify({ 
           accountId: id, 
           steamId: account.steamId,
           casesFound: cases.length,
           successCount,
           errorCount
-        }
+        })
       });
       
       res.json({ 
@@ -221,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'error',
         message: 'Inventory refresh failed',
-        details: { accountId: req.params.id, error: (error as Error).message }
+        details: JSON.stringify({ accountId: req.params.id, error: (error as Error).message })
       });
       
       res.status(500).json({ 
@@ -240,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'info',
         message: 'Starting refresh for all accounts',
-        details: { accountCount: accounts.length }
+        details: JSON.stringify({ accountCount: accounts.length })
       });
       
       // Track results
@@ -280,7 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Update account lastUpdated
-          await storage.updateAccount(account.id, { lastUpdated: new Date() });
+          await storage.updateAccount(account.id, { lastUpdated: new Date().toISOString() });
           
           results.push({
             accountId: account.id,
@@ -306,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'info',
         message: 'Refresh all accounts completed',
-        details: { results }
+        details: JSON.stringify({ results })
       });
       
       res.json({ 
@@ -321,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'error',
         message: 'Refresh all accounts failed',
-        details: { error: (error as Error).message }
+        details: JSON.stringify({ error: (error as Error).message })
       });
       
       res.status(500).json({ 
@@ -367,11 +367,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createLog({
         level: 'info',
         message: 'Settings updated',
-        details: { 
+        details: JSON.stringify({ 
           currency: settings.currency, 
           requestDelay: settings.requestDelay,
           apiKeyUpdated: !!settings.steamApiKey
-        }
+        })
       });
       
       // Mask API key in response
@@ -424,11 +424,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           steamApiKey: apiKey,
           currency: 'USD',
           requestDelay: 2000,
-          userAgents: [
+          userAgents: JSON.stringify([
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
-          ]
+          ])
         });
       } else {
         // Update existing settings
@@ -496,7 +496,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let lastUpdated = null;
       if (accounts.length > 0) {
         lastUpdated = accounts.reduce((latest, account) => {
-          return (account.lastUpdated && account.lastUpdated > latest) ? account.lastUpdated : latest;
+          const accountDate = account.lastUpdated ? new Date(account.lastUpdated) : new Date(0);
+          return accountDate > latest ? accountDate : latest;
         }, new Date(0));
       }
       

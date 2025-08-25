@@ -40,8 +40,10 @@ try {
       CREATE TABLE IF NOT EXISTS "cases" (
         "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         "accountId" integer NOT NULL,
-        "appId" integer NOT NULL,
+        "appId" text NOT NULL,
         "assetId" text NOT NULL,
+        "classId" text,
+        "instanceId" text,
         "name" text NOT NULL,
         "marketHashName" text NOT NULL,
         "iconUrl" text,
@@ -54,6 +56,7 @@ try {
       
       CREATE TABLE IF NOT EXISTS "settings" (
         "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+        "steamApiKey" text,
         "currency" text DEFAULT 'USD' NOT NULL,
         "requestDelay" integer DEFAULT 2000 NOT NULL,
         "userAgents" text NOT NULL

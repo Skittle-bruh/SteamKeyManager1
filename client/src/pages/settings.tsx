@@ -30,19 +30,22 @@ export default function Settings() {
   
   // Fetch current settings
   const { data: settings, isLoading } = useQuery({
-    queryKey: ['/api/settings'],
-    onSuccess: (data) => {
-      if (data) {
-        setCurrency(data.currency || "USD");
-        setRequestDelay(data.requestDelay || 2000);
-        setUserAgents(Array.isArray(data.userAgents) ? data.userAgents.join('\n') : "");
-      }
-    }
+    queryKey: ['/api/settings']
   });
   
+  // Update form values when settings data changes
+  React.useEffect(() => {
+    if (settings && typeof settings === 'object') {
+      const settingsData = settings as any;
+      setCurrency(settingsData.currency || "USD");
+      setRequestDelay(settingsData.requestDelay || 2000);
+      setUserAgents(Array.isArray(settingsData.userAgents) ? settingsData.userAgents.join('\n') : "");
+    }
+  }, [settings]);
+  
   // Fetch API key info
-  const { data: apiKeyData } = useQuery({
-    queryKey: ['/api/settings/api-key'],
+  const { data: apiKeyData } = useQuery<{ hasApiKey: boolean; preview: string }>({
+    queryKey: ['/api/settings/api-key']
   });
   
   useEffect(() => {
@@ -104,7 +107,7 @@ export default function Settings() {
   const handleSaveApiKey = async () => {
     try {
       // If it's a masked value and hasn't changed, don't save
-      if (pendingApiKey.includes('*') && pendingApiKey === apiKeyData?.preview) {
+      if (pendingApiKey.includes('*') && apiKeyData && pendingApiKey === apiKeyData.preview) {
         toast({
           title: "No Changes",
           description: "API key unchanged",
