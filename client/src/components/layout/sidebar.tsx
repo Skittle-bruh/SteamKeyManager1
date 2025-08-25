@@ -37,8 +37,10 @@ export function Sidebar({ className }: SidebarProps) {
             <li key={item.id} className="mb-1">
               <Link 
                 href={`/${item.id}`}
+                data-testid={`button-${item.id}`}
                 onClick={(e) => {
                   e.preventDefault();
+                  console.log('Navigating to section:', item.id);
                   setActiveSection(item.id);
                 }}
                 className={cn(

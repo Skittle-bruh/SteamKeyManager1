@@ -110,6 +110,7 @@ export function AccountCard({
             <Button
               variant="link"
               size="sm"
+              data-testid="button-view-details"
               className="text-primary hover:underline p-0 h-auto"
               onClick={handleViewDetails}
             >

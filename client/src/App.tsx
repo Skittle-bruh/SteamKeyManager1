@@ -10,6 +10,8 @@ function App() {
   // Получаем активный раздел из контекста
   const { activeSection } = useAppContext();
   
+  console.log('Current active section:', activeSection);
+  
   // Рендерим соответствующий компонент в зависимости от активного раздела
   switch (activeSection) {
     case "dashboard":

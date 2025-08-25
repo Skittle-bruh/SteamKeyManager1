@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [showCasesModal, setShowCasesModal] = useState(false);
 
   const handleViewDetails = (id: number) => {
+    console.log('Opening cases modal for account:', id);
     setSelectedAccountId(id);
     setShowCasesModal(true);
   };
@@ -127,7 +128,7 @@ export default function Dashboard() {
                   <Skeleton className="h-5 w-32" />
                 ) : (
                   <h3 className="text-sm font-semibold text-neutral-900">
-                    {formatDate(summary?.lastUpdated)}
+                    {formatDate(summary?.lastUpdated || null)}
                   </h3>
                 )}
               </div>
