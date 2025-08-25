@@ -190,7 +190,7 @@ export default function Settings() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Alert className="mb-4 bg-blue-50 text-blue-700 border-blue-200">
+            <Alert className="mb-4 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
               <ShieldAlert className="h-4 w-4" />
               <AlertDescription>
                 Your API key is stored locally and is only used to access the Steam Web API.
@@ -212,7 +212,7 @@ export default function Settings() {
                 <button
                   type="button"
                   onClick={toggleApiKeyVisibility}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300"
                 >
                   {showApiKey ? (
                     <EyeOff className="h-5 w-5" />
