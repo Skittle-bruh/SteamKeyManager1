@@ -164,8 +164,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     console.log('activeSection changed to:', activeSection);
   }, [activeSection]);
 
-  // Собираем значение контекста
-  const contextValue: AppContextType = {
+  // Собираем значение контекста с useMemo для оптимизации
+  const contextValue: AppContextType = React.useMemo(() => ({
     apiKey,
     setApiKey,
     checkApiKey,
@@ -176,7 +176,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     isRefreshingAll,
     selectedAccountId,
     setSelectedAccountId,
-  };
+  }), [apiKey, isLoading, activeSection, isRefreshingAll, selectedAccountId]);
 
   console.log('Context value created with activeSection:', activeSection);
 
