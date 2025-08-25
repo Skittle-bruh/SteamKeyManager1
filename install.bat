@@ -1,38 +1,28 @@
 @echo off
-chcp 65001 >nul
-echo =====================================
-echo Steam Inventory Parser - Установка
-echo =====================================
+echo Installing dependencies...
 echo.
 
-echo Проверка Node.js...
-node --version >nul 2>&1
+node --version
 if %errorlevel% neq 0 (
-    echo ОШИБКА: Node.js не установлен!
-    echo Пожалуйста, установите Node.js с https://nodejs.org/
+    echo ERROR: Node.js not found!
+    echo Please install Node.js from https://nodejs.org/
     pause
     exit /b 1
 )
 
-echo Node.js найден, версия:
-node --version
-
 echo.
-echo Установка зависимостей...
-call npm install
+echo Installing packages...
+npm install
 
 if %errorlevel% neq 0 (
     echo.
-    echo ОШИБКА: Не удалось установить зависимости!
+    echo ERROR: Failed to install dependencies!
     pause
     exit /b 1
 )
 
 echo.
-echo =====================================
-echo Установка завершена успешно!
-echo =====================================
-echo.
-echo Для запуска приложения используйте start.bat
+echo Installation completed successfully!
+echo Use start.bat to run the application
 echo.
 pause
