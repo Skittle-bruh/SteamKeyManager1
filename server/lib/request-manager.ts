@@ -59,7 +59,6 @@ export class RequestManager {
     if (isInventoryRequest) {
       if (this.inventoryRequestsThisPeriod >= this.maxInventoryRequestsPer30Min) {
         const timeToWait = this.INVENTORY_PERIOD_MS - (now - this.periodStartTime) + 60000; // Add 1 min buffer
-        console.log(`Inventory rate limit reached, waiting ${Math.round(timeToWait/1000)}s before next request`);
         await this.delay(timeToWait);
         
         // Reset after waiting
@@ -94,7 +93,7 @@ export class RequestManager {
     await storage.createLog({
       level: 'info',
       message: 'API Request',
-      details: { url: `${urlObj.origin}${urlObj.pathname}` }
+      details: JSON.stringify({ url: `${urlObj.origin}${urlObj.pathname}` })
     });
     
     // Add random user agent if not provided
@@ -128,7 +127,6 @@ export class RequestManager {
           // Too many requests - exponential backoff (Steam 2025)
           if (currentAttempts < this.MAX_RETRY_ATTEMPTS) {
             const backoffDelay = Math.min(300000, Math.pow(2, currentAttempts) * 60000); // Max 5 minutes
-            console.log(`Rate limited (429), attempt ${currentAttempts + 1}/${this.MAX_RETRY_ATTEMPTS}, waiting ${Math.round(backoffDelay/1000)}s...`);
             
             this.retryAttempts.set(requestKey, currentAttempts + 1);
             await this.delay(backoffDelay);
@@ -143,11 +141,11 @@ export class RequestManager {
         await storage.createLog({
           level: 'error',
           message: 'API Error Response',
-          details: { 
+          details: JSON.stringify({ 
             url: `${urlObj.origin}${urlObj.pathname}`,
             status: response.status,
             statusText: response.statusText
-          }
+          })
         });
       }
       
@@ -157,10 +155,10 @@ export class RequestManager {
       await storage.createLog({
         level: 'error',
         message: 'API Request Failed',
-        details: { 
+        details: JSON.stringify({ 
           url: `${urlObj.origin}${urlObj.pathname}`,
           error: (error as Error).message
-        }
+        })
       });
       
       // Throw the error to be handled by caller

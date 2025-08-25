@@ -63,7 +63,7 @@ export class DatabaseStorage implements IStorage {
   async updateAccount(id: number, accountUpdate: Partial<Account>): Promise<Account | undefined> {
     const [updatedAccount] = await db
       .update(accounts)
-      .set({ ...accountUpdate, lastUpdated: new Date() })
+      .set({ ...accountUpdate, lastUpdated: new Date().toISOString() })
       .where(eq(accounts.id, id))
       .returning();
     return updatedAccount || undefined;
@@ -71,7 +71,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAccount(id: number): Promise<boolean> {
     const result = await db.delete(accounts).where(eq(accounts.id, id));
-    return result.rowCount! > 0;
+    return result.changes > 0;
   }
 
   // Case operations
@@ -95,7 +95,7 @@ export class DatabaseStorage implements IStorage {
   async updateCase(id: number, caseUpdate: Partial<Case>): Promise<Case | undefined> {
     const [updatedCase] = await db
       .update(cases)
-      .set({ ...caseUpdate, lastUpdated: new Date() })
+      .set({ ...caseUpdate, lastUpdated: new Date().toISOString() })
       .where(eq(cases.id, id))
       .returning();
     return updatedCase || undefined;
@@ -114,7 +114,7 @@ export class DatabaseStorage implements IStorage {
     if (existingCase) {
       const [updated] = await db
         .update(cases)
-        .set({ ...caseItem, lastUpdated: new Date() })
+        .set({ ...caseItem, lastUpdated: new Date().toISOString() })
         .where(eq(cases.id, existingCase.id))
         .returning();
       return updated;
@@ -126,7 +126,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCase(id: number): Promise<boolean> {
     const result = await db.delete(cases).where(eq(cases.id, id));
-    return result.rowCount! > 0;
+    return result.changes > 0;
   }
 
   async deleteCasesByAccountId(accountId: number): Promise<boolean> {
@@ -137,22 +137,42 @@ export class DatabaseStorage implements IStorage {
   // Settings operations
   async getSettings(): Promise<Settings | undefined> {
     const [settingsRecord] = await db.select().from(settings).limit(1);
-    return settingsRecord || undefined;
+    if (!settingsRecord) return undefined;
+    
+    // Parse userAgents JSON string back to array for compatibility
+    return {
+      ...settingsRecord,
+      userAgents: JSON.parse(settingsRecord.userAgents || '[]')
+    } as Settings;
   }
 
   async saveSettings(newSettings: InsertSettings): Promise<Settings> {
     const existingSettings = await this.getSettings();
     
+    // Convert userAgents array to JSON string if it's an array
+    const settingsToSave = {
+      ...newSettings,
+      userAgents: typeof newSettings.userAgents === 'string' 
+        ? newSettings.userAgents 
+        : JSON.stringify(newSettings.userAgents || [])
+    };
+    
     if (existingSettings) {
       const [updated] = await db
         .update(settings)
-        .set(newSettings)
+        .set(settingsToSave)
         .where(eq(settings.id, existingSettings.id))
         .returning();
-      return updated;
+      return {
+        ...updated,
+        userAgents: JSON.parse(updated.userAgents || '[]')
+      } as Settings;
     } else {
-      const [created] = await db.insert(settings).values(newSettings).returning();
-      return created;
+      const [created] = await db.insert(settings).values(settingsToSave).returning();
+      return {
+        ...created,
+        userAgents: JSON.parse(created.userAgents || '[]')
+      } as Settings;
     }
   }
 
@@ -211,11 +231,11 @@ async function initializeDefaultSettings() {
       await storage.saveSettings({
         currency: 'USD',
         requestDelay: 2000,
-        userAgents: [
+        userAgents: JSON.stringify([
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0',
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-        ]
+        ])
       });
       console.log('Default settings initialized');
     }
