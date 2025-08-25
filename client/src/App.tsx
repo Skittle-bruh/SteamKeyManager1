@@ -4,20 +4,14 @@ import Dashboard from "@/pages/dashboard";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 import { useAppContext } from "./context/app-context";
+import { useNavigation } from "./context/navigation-context";
 
 // Главный компонент приложения
 function App() {
-  // Получаем активный раздел из контекста
-  const { activeSection } = useAppContext();
-  const [, forceUpdate] = React.useReducer(x => x + 1, 0);
+  // Получаем активный раздел из нового контекста
+  const { activeSection } = useNavigation();
   
-  // Отладка: принудительно обновляем компонент каждую секунду
-  React.useEffect(() => {
-    const interval = setInterval(forceUpdate, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  
-  console.log('App rendering with activeSection:', activeSection);
+  console.log('App rendering with activeSection from NavigationContext:', activeSection);
   
   // Рендерим соответствующий компонент в зависимости от активного раздела
   console.log('Switch statement evaluating:', activeSection);

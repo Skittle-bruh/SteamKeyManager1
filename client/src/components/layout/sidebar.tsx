@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useAppContext } from "@/context/app-context";
+import { useNavigation } from "@/context/navigation-context";
 import { Link } from "wouter";
 import { 
   Home, 
@@ -15,7 +16,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
-  const { activeSection, setActiveSection } = useAppContext();
+  const { activeSection, setActiveSection } = useNavigation();
 
   const navItems = [
     { id: "dashboard", icon: Home, label: "Дашборд" },

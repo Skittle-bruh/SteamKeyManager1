@@ -6,20 +6,26 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "./context/app-context";
+import { NavigationProvider } from "./context/navigation-context";
 import "./index.css";
 import App from "./App";
 
 // Создаем корневой компонент
-const Root = () => (
-  <QueryClientProvider client={queryClient}>
-    <AppProvider>
-      <TooltipProvider>
-        <App />
-        <Toaster />
-      </TooltipProvider>
-    </AppProvider>
-  </QueryClientProvider>
-);
+const Root = () => {
+  console.log('Root component rendering');
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppProvider>
+        <NavigationProvider>
+          <TooltipProvider>
+            <App />
+            <Toaster />
+          </TooltipProvider>
+        </NavigationProvider>
+      </AppProvider>
+    </QueryClientProvider>
+  );
+};
 
 // Рендерим приложение
 createRoot(document.getElementById("root") as HTMLElement).render(<Root />);
